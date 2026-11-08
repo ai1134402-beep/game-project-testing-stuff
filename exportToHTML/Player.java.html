@@ -1,0 +1,132 @@
+<html>
+<head>
+<title>Player.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #7a7e85;}
+.s5 { color: #2aacb8;}
+.s6 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Player.java</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Color</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Graphics</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Rectangle</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">imageio</span><span class="s2">.</span><span class="s1">ImageIO</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">image</span><span class="s2">.</span><span class="s1">BufferedImage</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">IOException</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* Player.java</span>
+ <span class="s3">* The ship at the bottom of the screen that the player controls.</span>
+ <span class="s3">*</span>
+ <span class="s3">* YOU WILL COMPLETE THIS CLASS IN STEPS 2 AND 3 of the tutorial.</span>
+ <span class="s3">*/</span>
+<span class="s0">public class </span><span class="s1">Player</span>
+<span class="s2">{</span>
+    <span class="s4">//  2.1: Declare six PRIVATE instance variables (all int):</span>
+    <span class="s4">//           x, y, width, height, speed, direction</span>
+    <span class="s4">//           x and y are the ship's top-left corner.</span>
+    <span class="s4">//           direction will be -1 (left), 0 (still), or 1 (right).</span>
+    <span class="s0">private int </span><span class="s1">x</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">y</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">width </span><span class="s2">= </span><span class="s5">28</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">height </span><span class="s2">= </span><span class="s5">44</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">speed </span><span class="s2">= </span><span class="s5">5</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">direction </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+    
+    <span class="s0">private final </span><span class="s1">Color shipHitboxColor </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">0</span><span class="s2">,</span><span class="s5">255</span><span class="s2">,</span><span class="s5">255</span><span class="s2">);</span>
+    <span class="s0">private </span><span class="s1">BufferedImage shipSprite</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">flicker </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+    <span class="s3">/** Constructor: sets up a new Player at the given starting position. */</span>
+    <span class="s0">public </span><span class="s1">Player</span><span class="s2">(</span><span class="s0">int </span><span class="s1">startX</span><span class="s2">, </span><span class="s0">int </span><span class="s1">startY</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s4">//  2.2: Give every instance variable a starting value.</span>
+        <span class="s4">//           x and y come from the parameters.</span>
+        <span class="s4">//           Suggested: width = 80, height = 20, speed = 7, direction = 0</span>
+        <span class="s1">x </span><span class="s2">= </span><span class="s1">startX</span><span class="s2">;</span>
+        <span class="s1">y </span><span class="s2">= </span><span class="s1">startY</span><span class="s2">;</span>
+
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s4">// Option A: Use this if the image is inside your project's source/assets folder (Recommended)</span>
+            <span class="s1">shipSprite </span><span class="s2">= </span><span class="s1">ImageIO</span><span class="s2">.</span><span class="s1">read</span><span class="s2">(</span><span class="s1">getClass</span><span class="s2">().</span><span class="s1">getResourceAsStream</span><span class="s2">(</span><span class="s6">&quot;/ship.png&quot;</span><span class="s2">));</span>
+
+            <span class="s4">// Option B: Use this if the image is just loose in your root project folder</span>
+            <span class="s4">// shipSprite = ImageIO.read(new java.io.File(&quot;ship.png&quot;));</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">IOException e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s6">&quot;Error: Could not load player image!&quot;</span><span class="s2">);</span>
+            <span class="s1">e</span><span class="s2">.</span><span class="s1">printStackTrace</span><span class="s2">();</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Called by GamePanel to tell the player which way to move. */</span>
+    <span class="s0">public void </span><span class="s1">setDirection</span><span class="s2">(</span><span class="s0">int </span><span class="s1">dir</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s4">//  3.1: Store dir in the direction instance variable.</span>
+
+        <span class="s1">direction </span><span class="s2">= </span><span class="s1">dir</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Moves the player one frame and keeps it inside the window. */</span>
+    <span class="s0">public void </span><span class="s1">update</span><span class="s2">(</span><span class="s0">int </span><span class="s1">panelWidth</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s4">//  3.2: Move the ship horizontally: x += direction * speed;</span>
+        <span class="s4">//</span>
+
+        <span class="s4">//  3.3: Keep the ship on screen using two if statements.</span>
+        <span class="s4">//           - If x is less than 0, set x to 0.</span>
+        <span class="s4">//           - If the RIGHT edge (x + width) is bigger than panelWidth,</span>
+        <span class="s4">//             set x so the right edge is exactly at panelWidth.</span>
+        <span class="s0">if </span><span class="s2">((</span><span class="s1">x</span><span class="s2">+</span><span class="s1">direction </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">) &gt;= </span><span class="s5">0 </span><span class="s2">&amp;&amp; (</span><span class="s1">x</span><span class="s2">+</span><span class="s1">width</span><span class="s2">+</span><span class="s1">direction </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">) &lt;= </span><span class="s1">panelWidth</span><span class="s2">) </span><span class="s1">x </span><span class="s2">+= </span><span class="s1">direction </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Draws the ship. */</span>
+    <span class="s0">public void </span><span class="s1">draw</span><span class="s2">(</span><span class="s1">Graphics g</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s4">//  2.3: Draw the ship using g.setColor(...) and g.fillRect(...).</span>
+        <span class="s4">//           Try a cyan rectangle for the body, and a smaller white</span>
+        <span class="s4">//           rectangle on top for the cockpit. Be creative!</span>
+        <span class="s4">//           Reminder: g.fillRect(left, top, width, height);</span>
+        
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">shipSprite </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">flicker</span><span class="s2">++;</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">flicker </span><span class="s2">&lt;= </span><span class="s5">10</span><span class="s2">) { </span><span class="s4">//flips the image to add a 'flicker' to the flame on the thruster</span>
+                <span class="s4">// Draw normally</span>
+                <span class="s1">g</span><span class="s2">.</span><span class="s1">drawImage</span><span class="s2">(</span><span class="s1">shipSprite</span><span class="s2">,</span>
+                        <span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">x </span><span class="s2">+ </span><span class="s1">width</span><span class="s2">, </span><span class="s1">y </span><span class="s2">+ </span><span class="s1">height</span><span class="s2">,</span>
+                        <span class="s5">0</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s1">shipSprite</span><span class="s2">.</span><span class="s1">getWidth</span><span class="s2">(), </span><span class="s1">shipSprite</span><span class="s2">.</span><span class="s1">getHeight</span><span class="s2">(),</span>
+                        <span class="s0">null</span><span class="s2">);</span>
+            <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                <span class="s4">// Draw flipped</span>
+                <span class="s1">g</span><span class="s2">.</span><span class="s1">drawImage</span><span class="s2">(</span><span class="s1">shipSprite</span><span class="s2">,</span>
+                        <span class="s1">x </span><span class="s2">+ </span><span class="s1">width</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">x</span><span class="s2">, </span><span class="s1">y </span><span class="s2">+ </span><span class="s1">height</span><span class="s2">,</span>
+                        <span class="s5">0</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s1">shipSprite</span><span class="s2">.</span><span class="s1">getWidth</span><span class="s2">(), </span><span class="s1">shipSprite</span><span class="s2">.</span><span class="s1">getHeight</span><span class="s2">(),</span>
+                        <span class="s0">null</span><span class="s2">);</span>
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">flicker </span><span class="s2">&gt;= </span><span class="s5">20</span><span class="s2">) </span><span class="s1">flicker </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s1">g</span><span class="s2">.</span><span class="s1">setColor</span><span class="s2">(</span><span class="s1">shipHitboxColor</span><span class="s2">);</span>
+            <span class="s1">g</span><span class="s2">.</span><span class="s1">fillRect</span><span class="s2">(</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">width</span><span class="s2">, </span><span class="s1">height</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** The rectangle that surrounds the ship (used for collisions). */</span>
+    <span class="s0">public </span><span class="s1">Rectangle getBounds</span><span class="s2">()</span>
+    <span class="s2">{</span>
+        <span class="s4">//  2.4: Replace this line so it returns a Rectangle built from</span>
+        <span class="s4">//           the ship's real x, y, width, and height.</span>
+        <span class="s0">return new </span><span class="s1">Rectangle</span><span class="s2">(</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">width</span><span class="s2">, </span><span class="s1">height</span><span class="s2">);</span>
+    <span class="s2">}</span>
+<span class="s2">}</span></pre>
+</body>
+</html>

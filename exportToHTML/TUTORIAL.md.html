@@ -1,0 +1,361 @@
+<html>
+<head>
+<title>TUTORIAL.md</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #c77dbb; font-style: italic;}
+.s5 { color: #bcbec4;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+TUTORIAL.md</font>
+</center></td></tr></table>
+<pre><span class="s0"># </span><span class="s1">⭐ Star Catcher — Build Your Own Java Game</span>
+
+<span class="s1">**Course:** AP Computer Science A  |  **Time:** about 8–10 class periods  |  **Work:** individual or pairs</span>
+
+<span class="s1">You will build a real, playable graphics game in Java. You steer a ship along the bottom of the screen, **catch falling stars** for points, and **dodge asteroids** that cost you a life. The game gets faster as your score climbs.</span>
+
+<span class="s1">Along the way you will practice the core of AP CSA: **classes, constructors, instance variables, methods, `if` statements, loops, arrays, `ArrayList`, inheritance, overriding, and polymorphism.**</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">How this project works</span>
+
+<span class="s1">Your `starter/` folder is a *nearly working* program. Everything compiles and runs from the very first minute, but the game does nothing interesting yet. Your job is to find each `// TODO` comment, read the instructions, and write the code.</span>
+
+<span class="s0">- </span><span class="s1">🟢 **PROVIDED** code is finished. Read it, learn from it, but you don't have to change it.</span>
+<span class="s0">- </span><span class="s1">🟡 **TODO** comments are numbered by step (`TODO 3.2` belongs to Step 3). Work in order.</span>
+<span class="s0">- </span><span class="s1">🔵 **CHECKPOINT** boxes tell you exactly what you should see before moving on. **Run your program at every checkpoint.** Never write more than a few lines without testing.</span>
+
+<span class="s0">### </span><span class="s1">The files</span>
+
+<span class="s0">| </span><span class="s1">File </span><span class="s0">| </span><span class="s1">Who writes it </span><span class="s0">| </span><span class="s1">What it does </span><span class="s0">|</span>
+<span class="s0">|---|---|---|</span>
+<span class="s0">| </span><span class="s1">`Main.java` </span><span class="s0">| </span><span class="s1">Provided </span><span class="s0">| </span><span class="s1">Opens the window </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">`GamePanel.java` </span><span class="s0">| </span><span class="s1">You + provided </span><span class="s0">| </span><span class="s1">The &quot;brain&quot;: game loop, keyboard, drawing </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">`Player.java` </span><span class="s0">| </span><span class="s1">**You** </span><span class="s0">| </span><span class="s1">The ship you control </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">`FallingObject.java` </span><span class="s0">| </span><span class="s1">**You** </span><span class="s0">| </span><span class="s1">Superclass for anything that falls </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">`Star.java` </span><span class="s0">| </span><span class="s1">Provided (worked example) </span><span class="s0">| </span><span class="s1">A catchable falling object </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">`Asteroid.java` </span><span class="s0">| </span><span class="s1">**You, from scratch** </span><span class="s0">| </span><span class="s1">A dangerous falling object </span><span class="s0">|</span>
+
+<span class="s0">### </span><span class="s1">The big idea: the game loop</span>
+
+<span class="s1">Every video game is a loop that repeats about 60 times per second:</span>
+
+<span class="s0">```</span>
+   <span class="s2">┌────────────────────────────────────────────┐</span>
+   <span class="s2">│  Timer fires  ──►  update()  ──►  repaint() │</span>
+   <span class="s2">│                (change data)    (redraw)    │</span>
+   <span class="s2">└──────────────────▲──────────────────────────┘</span>
+                      <span class="s2">└──────────── repeat ~60×/sec</span>
+<span class="s0">```</span>
+
+<span class="s1">`update()` changes numbers (positions, score, lives). `paintComponent()` just draws whatever those numbers currently say. **Keeping &quot;change the data&quot; separate from &quot;draw the data&quot; is one of the most important habits in programming.**</span>
+
+<span class="s0">### </span><span class="s1">How coordinates work</span>
+
+<span class="s1">The origin `(0, 0)` is the **top-left** corner. `x` increases going **right**. `y` increases going **down** — so *adding* to `y` makes something fall.</span>
+
+<span class="s0">```</span>
+<span class="s2">(0,0) ───────────► x</span>
+  <span class="s2">│</span>
+  <span class="s2">│</span>
+  <span class="s2">▼</span>
+  <span class="s2">y</span>
+<span class="s0">```</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Step 1 — Launch and Customize  🟢 *Warm-up (15 min)*</span>
+
+<span class="s1">**Concepts:** constants, `Color`, reading code</span>
+
+<span class="s0">1. </span><span class="s1">Open the project in your IDE and run `Main`. You should see a dark blue window. Nothing else happens yet — that's expected!</span>
+<span class="s0">2. </span><span class="s1">Find **TODO 1.1** in `GamePanel.java`. Change `BACKGROUND_COLOR` to a color you like. `new Color(r, g, b)` takes three values from 0 to 255.</span>
+<span class="s0">3. </span><span class="s1">Read through all of `GamePanel.java`. Don't worry about understanding everything. Find and note in your notebook:</span>
+   <span class="s0">- </span><span class="s1">Which method runs 60 times per second?</span>
+   <span class="s0">- </span><span class="s1">Which variables store the game's data?</span>
+   <span class="s0">- </span><span class="s1">Where is `Player` created?</span>
+
+<span class="s3">&gt; </span><span class="s1">🔵 **CHECKPOINT 1:** A window opens with your custom background color.</span>
+
+<span class="s1">**Think about it:** `BACKGROUND_COLOR` is declared `static final`. What does `final` prevent? Why is that a good idea for a value like the window width?</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Step 2 — The Player Class  🟡 *(45–60 min)*</span>
+
+<span class="s1">**Concepts:** classes, `private` instance variables, constructors, methods, objects</span>
+
+<span class="s1">A **class** is a blueprint. An **object** is one thing built from that blueprint. `GamePanel` already contains the line:</span>
+
+<span class="s0">```</span><span class="s4">java</span>
+<span class="s2">player = new Player(WIDTH / 2 - 40, HEIGHT - 60);</span>
+<span class="s0">```</span>
+
+<span class="s1">That calls the `Player` **constructor** to build one `Player` object. Right now `Player` is empty, so nothing shows up. Open `Player.java` and complete:</span>
+
+<span class="s0">| </span><span class="s1">TODO </span><span class="s0">| </span><span class="s1">Task </span><span class="s0">|</span>
+<span class="s0">|---|---|</span>
+<span class="s0">| </span><span class="s1">**2.1** </span><span class="s0">| </span><span class="s1">Declare the six `private int` instance variables </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**2.2** </span><span class="s0">| </span><span class="s1">Initialize them in the constructor (`x` and `y` come from the parameters) </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**2.3** </span><span class="s0">| </span><span class="s1">Draw the ship with `g.setColor(...)` and `g.fillRect(...)` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**2.4** </span><span class="s0">| </span><span class="s1">Make `getBounds()` return a `Rectangle` of the ship's real position and size </span><span class="s0">|</span>
+
+<span class="s1">Two tips:</span>
+
+<span class="s0">- </span><span class="s1">Inside the constructor, you will write things like `x = startX;`. The parameter and the instance variable have different names on purpose.</span>
+<span class="s0">- </span><span class="s1">`g.fillRect(left, top, width, height)` draws a filled rectangle. Layer two rectangles for a body and a cockpit.</span>
+
+<span class="s3">&gt; </span><span class="s1">🔵 **CHECKPOINT 2:** Your ship appears near the bottom-center of the window.</span>
+
+<span class="s1">**Think about it:**</span>
+<span class="s0">1. </span><span class="s1">Why are the instance variables `private`? What would be risky about making them `public`?</span>
+<span class="s0">2. </span><span class="s1">If you create two `Player` objects, how many `x` variables exist? Where?</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Step 3 — Moving the Ship  🟡 *(45–60 min)*</span>
+
+<span class="s1">**Concepts:** `if` statements, boolean variables, compound conditions (`||`), relational operators, method calls between objects</span>
+
+<span class="s1">Movement is a three-part chain:</span>
+
+<span class="s0">```</span>
+<span class="s2">keyboard  ──►  leftPressed / rightPressed  ──►  player.setDirection()  ──►  player.update()</span>
+<span class="s2">(KeyEvent)        (booleans in GamePanel)         (stores -1, 0, or 1)       (changes x)</span>
+<span class="s0">```</span>
+
+<span class="s1">**In `Player.java`:**</span>
+
+<span class="s0">| </span><span class="s1">TODO </span><span class="s0">| </span><span class="s1">Task </span><span class="s0">|</span>
+<span class="s0">|---|---|</span>
+<span class="s0">| </span><span class="s1">**3.1** </span><span class="s0">| </span><span class="s1">`setDirection` stores its parameter in `direction` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**3.2** </span><span class="s0">| </span><span class="s1">`update` moves the ship: `x += direction * speed;` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**3.3** </span><span class="s0">| </span><span class="s1">Two `if` statements keep the ship inside the window </span><span class="s0">|</span>
+
+<span class="s1">For 3.3, remember the ship's **right edge** is `x + width`, not `x`.</span>
+
+<span class="s1">**In `GamePanel.java`:**</span>
+
+<span class="s0">| </span><span class="s1">TODO </span><span class="s0">| </span><span class="s1">Task </span><span class="s0">|</span>
+<span class="s0">|---|---|</span>
+<span class="s0">| </span><span class="s1">**3.4** </span><span class="s0">| </span><span class="s1">In `update()`, compute `direction` from the two booleans, then call the player's methods </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**3.5** </span><span class="s0">| </span><span class="s1">In `keyPressed`, set `leftPressed` / `rightPressed` to `true` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**3.6** </span><span class="s0">| </span><span class="s1">In `keyReleased`, set them back to `false` </span><span class="s0">|</span>
+
+<span class="s1">Accept both arrow keys **and** `A` / `D` using `||`:</span>
+
+<span class="s0">```</span><span class="s4">java</span>
+<span class="s2">if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A)</span>
+<span class="s0">```</span>
+
+<span class="s3">&gt; </span><span class="s1">🔵 **CHECKPOINT 3:** The ship slides smoothly left and right, stops when you let go, and can **never** leave the window. Hold *both* keys at once — what happens? (Check TODO 3.4's question.)</span>
+
+<span class="s1">**Debug it:** Remove your boundary `if` statements and run again. What happens to the ship? Put them back.</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Step 4 — The FallingObject Superclass  🟡 *(30–45 min)*</span>
+
+<span class="s1">**Concepts:** superclass design, methods, `boolean` return values, `Rectangle`</span>
+
+<span class="s1">Stars and asteroids both fall, both have a position and size, and both can be caught. Instead of writing that twice, we put the shared code in one **superclass**, `FallingObject`. Open it and finish:</span>
+
+<span class="s0">| </span><span class="s1">TODO </span><span class="s0">| </span><span class="s1">Task </span><span class="s0">|</span>
+<span class="s0">|---|---|</span>
+<span class="s0">| </span><span class="s1">**4.1** </span><span class="s0">| </span><span class="s1">`update()` — add `speed` to `y` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**4.2** </span><span class="s0">| </span><span class="s1">`isOffScreen(panelHeight)` — return `true` if `y` is past the bottom </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**4.3** </span><span class="s0">| </span><span class="s1">`getBounds()` — return a `Rectangle` using `x`, `y`, `size`, `size` </span><span class="s0">|</span>
+
+<span class="s1">Now study `Star.java` (already written). It's your worked example for inheritance. Notice:</span>
+
+<span class="s0">- </span><span class="s1">`extends FallingObject` — a Star **is-a** FallingObject</span>
+<span class="s0">- </span><span class="s1">`super(x, 30, speed)` — the first line of a subclass constructor runs the superclass constructor</span>
+<span class="s0">- </span><span class="s1">`@Override public void draw(...)` — Star replaces the superclass's white-square `draw` with its own star shape</span>
+<span class="s0">- </span><span class="s1">`getX()`, `getY()`, `getSize()` — Star can't see `FallingObject`'s `private` variables, so it uses these **accessor methods**</span>
+
+<span class="s1">**Test it** (temporary):</span>
+
+<span class="s0">- </span><span class="s1">In `GamePanel`'s constructor, uncomment the `objects.add(new Star(280, 2));` line (**TODO 4.4**).</span>
+<span class="s0">- </span><span class="s1">In `update()`, write the enhanced `for` loop from **TODO 4.5**.</span>
+
+<span class="s3">&gt; </span><span class="s1">🔵 **CHECKPOINT 4:** One yellow star falls from the top and drops off the bottom. (It starts above the window, so wait a moment.)</span>
+
+<span class="s1">**Think about it:** `FallingObject.draw` draws a white square, but we never see a white square. Why not?</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Step 5 — Many Objects: Arrays and ArrayList  🟡 *(60–75 min)*</span>
+
+<span class="s1">**Concepts:** `ArrayList`, arrays, `for` loops, `Math.random`, casting, traversal with removal</span>
+
+<span class="s0">### </span><span class="s1">5A — A starfield with arrays *(TODO 5.1, 5.2)*</span>
+
+<span class="s1">The twinkling dots in the background are stored in two **parallel arrays**: `bgX[i]` and `bgY[i]` together describe star number `i`.</span>
+
+<span class="s0">- </span><span class="s1">**5.1** Fill both arrays with random positions inside `startNewGame()`.</span>
+<span class="s0">- </span><span class="s1">**5.2** In `update()`, move every dot down, and wrap it to the top when it passes the bottom.</span>
+
+<span class="s1">`(int) (Math.random() * WIDTH)` gives a random integer from `0` to `WIDTH - 1`. Be ready to explain why.</span>
+
+<span class="s3">&gt; </span><span class="s1">🔵 **CHECKPOINT 5A:** Dots scroll down the screen at different speeds, like flying through space.</span>
+
+<span class="s0">### </span><span class="s1">5B — Spawning stars *(TODO 5.3)*</span>
+
+<span class="s1">Complete `spawnObject()` so it makes a `Star` with a random `x` and speed and adds it to the `ArrayList`. `update()` already calls this method every so often. (Comment out the temporary test star from Step 4.)</span>
+
+<span class="s0">### </span><span class="s1">5C — Cleaning up with a backwards loop *(TODO 5.4)*</span>
+
+<span class="s1">Objects that fall off the bottom must be **removed**, or the list grows forever and the game slows down.</span>
+
+<span class="s3">&gt; </span><span class="s1">⚠️ **The classic bug.** Suppose you loop forward and remove item 2. Item 3 slides into position 2, then your loop moves on to position 3 and **skips it**. Counting **backwards** avoids this.</span>
+
+<span class="s1">Replace your enhanced `for` loop with a backwards counting loop, as the TODO describes.</span>
+
+<span class="s1">*Experiment:* Temporarily change it to a forward loop and watch for stars that freeze or flicker. Then fix it again.</span>
+
+<span class="s3">&gt; </span><span class="s1">🔵 **CHECKPOINT 5:** Stars rain down continuously. To prove the cleanup works, temporarily add `System.out.println(objects.size());` inside `update()`. The number should rise and fall, **never** growing without end. Remove the print when done.</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Step 6 — Asteroids, Collisions, Scoring  🟡 *(60–90 min)*</span>
+
+<span class="s1">**Concepts:** inheritance (writing a subclass), method overriding, polymorphism, collision detection, `Rectangle.intersects`</span>
+
+<span class="s0">### </span><span class="s1">6A — Write `Asteroid` yourself *(you do, from scratch)*</span>
+
+<span class="s1">Open `Asteroid.java`. It contains only a comment describing what to write. Delete the comment and write the entire class, using `Star.java` as your model:</span>
+
+<span class="s0">1. </span><span class="s1">`public class Asteroid extends FallingObject`</span>
+<span class="s0">2. </span><span class="s1">A constructor that calls `super(...)` with size **40**</span>
+<span class="s0">3. </span><span class="s1">An `@Override` of `draw` — a gray circle with a few dark craters</span>
+<span class="s0">4. </span><span class="s1">An `@Override` of `isHazard` that returns `true`</span>
+
+<span class="s0">### </span><span class="s1">6B — Spawn them *(TODO 6.1)*</span>
+
+<span class="s1">Update `spawnObject()` so 30% of new objects are asteroids and the rest are stars. Notice that **both** go into the *same* `ArrayList</span><span class="s5">&lt;FallingObject&gt;</span><span class="s1">`.</span>
+
+<span class="s0">### </span><span class="s1">6C — Collisions *(TODO 6.2)*</span>
+
+<span class="s1">Every `Rectangle` has an `intersects` method that returns `true` if two rectangles overlap:</span>
+
+<span class="s0">```</span><span class="s4">java</span>
+<span class="s2">if (obj.getBounds().intersects(player.getBounds()))</span>
+<span class="s0">```</span>
+
+<span class="s1">Inside, decide what happened:</span>
+
+<span class="s0">- </span><span class="s1">Hazard → lose a life</span>
+<span class="s0">- </span><span class="s1">Otherwise → gain **10** points</span>
+<span class="s0">- </span><span class="s1">Either way, remove the object</span>
+
+<span class="s3">&gt; </span><span class="s1">🔵 **CHECKPOINT 6:** Catching stars raises your score. Hitting an asteroid drops your lives. Asteroids and stars look different. (Lives can go negative for now — Step 7 fixes that.)</span>
+
+<span class="s0">### </span><span class="s1">🌟 The polymorphism moment</span>
+
+<span class="s1">Look at this line in your loop:</span>
+
+<span class="s0">```</span><span class="s4">java</span>
+<span class="s2">if (obj.isHazard())</span>
+<span class="s0">```</span>
+
+<span class="s1">The variable `obj` has type `FallingObject`, but the actual object might be a `Star` or an `Asteroid`. Java decides **at run time** which `isHazard()` to run. The same goes for `obj.draw(g)`. Your game loop never says &quot;if it's a star do this, if it's an asteroid do that&quot; — each object knows how to behave. That's **polymorphism**, and it's what makes adding a new object type (say, a `Shield`) easy.</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Step 7 — Game Over, Restart, and Levels  🟡 *(30 min)*</span>
+
+<span class="s1">**Concepts:** `&amp;&amp;`, integer division, state variables</span>
+
+<span class="s0">| </span><span class="s1">TODO </span><span class="s0">| </span><span class="s1">Task </span><span class="s0">|</span>
+<span class="s0">|---|---|</span>
+<span class="s0">| </span><span class="s1">**7.1** </span><span class="s0">| </span><span class="s1">When `lives &lt;= 0`, set `gameOver` to `true` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**7.2** </span><span class="s0">| </span><span class="s1">Calculate `level` as `score / 100 + 1` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">**7.3** </span><span class="s0">| </span><span class="s1">In `keyPressed`, restart with `startNewGame()` if the game is over **and** `R` was pressed </span><span class="s0">|</span>
+
+<span class="s3">&gt; </span><span class="s1">🔵 **CHECKPOINT 7 — FINAL:** The game ends at 0 lives, shows GAME OVER and your score, restarts on `R`, and gets noticeably harder as the level rises.</span>
+
+<span class="s1">**Think about it:** At what exact scores does the level change? Test `99`, `100`, and `199` by hand using integer division *before* you run the program.</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Step 8 — Make It Yours  🌟 *(choose at least two)*</span>
+
+<span class="s1">Choose challenges from at least two different levels. Each one is a chance to practice something real.</span>
+
+<span class="s1">**⭐ Level 1 — Tweak**</span>
+<span class="s0">- </span><span class="s1">Change colors, sizes, speeds, point values, number of lives, spawn percentages.</span>
+<span class="s0">- </span><span class="s1">Redesign the ship or asteroid art using `fillOval`, `fillPolygon`, or `drawLine`.</span>
+
+<span class="s1">**⭐⭐ Level 2 — Extend**</span>
+<span class="s0">- </span><span class="s1">**Bonus star:** Create `GoldStar extends FallingObject` worth 50 points that falls faster. (Uses a *new* subclass, so `GamePanel` barely changes!)</span>
+<span class="s0">- </span><span class="s1">**Heart:** Create a `Heart` class that gives the player an extra life.</span>
+<span class="s0">- </span><span class="s1">**High score:** Track the best score across restarts with a new instance variable.</span>
+<span class="s0">- </span><span class="s1">**Lives display:** Draw small ship icons for lives instead of text, using a `for` loop.</span>
+
+<span class="s1">**⭐⭐⭐ Level 3 — Engineer**</span>
+<span class="s0">- </span><span class="s1">**Missed-star penalty:** Lose points when a star falls off the bottom (hint: where in your loop do you know that happened?).</span>
+<span class="s0">- </span><span class="s1">**Shield power-up:** Make the player immune to asteroids for 5 seconds. (You'll need to count frames.)</span>
+<span class="s0">- </span><span class="s1">**Shooting:** Add a `Laser` class and let the player destroy asteroids with the spacebar.</span>
+<span class="s0">- </span><span class="s1">**Refactor challenge:** Add `getPoints()` to `FallingObject` (default `0`), override it in each subclass, and remove the `if (obj.isHazard())` branch for scoring. Which design is better, and why?</span>
+<span class="s0">- </span><span class="s1">**2D array:** Build a high-score table or a tile-based background using a 2D array.</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Check Your Understanding  📝</span>
+
+<span class="s1">Answer these in your notebook. Use your own code as evidence. These are the kinds of questions you'll see on the AP exam.</span>
+
+<span class="s0">1. </span><span class="s1">**Classes vs. objects.** Using `Player` as an example, explain the difference. How many objects of each class exist while the game runs?</span>
+<span class="s0">2. </span><span class="s1">**Encapsulation.** `Star` draws itself using `getX()` instead of `x`. Why can't it use `x` directly, and why did we design it this way?</span>
+<span class="s0">3. </span><span class="s1">**Constructors.** Explain what `super(x, 30, speed)` does. What error would you get if you left it out of `Star`?</span>
+<span class="s0">4. </span><span class="s1">**Trace.** Given `score = 90`, a star is caught, then another. Trace `score` and `level` after each catch.</span>
+<span class="s0">5. </span><span class="s1">**Arrays vs. `ArrayList`.** The background stars use arrays, but falling objects use an `ArrayList`. Why is each the right choice?</span>
+<span class="s0">6. </span><span class="s1">**Traversal.** Explain in your own words why we loop backwards when removing from an `ArrayList`. Give a concrete example with a list of 4 elements.</span>
+<span class="s0">7. </span><span class="s1">**Polymorphism.** The list is declared `ArrayList</span><span class="s5">&lt;FallingObject&gt;</span><span class="s1">`. How can it hold `Star`s and `Asteroid`s? When `obj.draw(g)` runs, how does Java know which `draw` to call?</span>
+<span class="s0">8. </span><span class="s1">**Debugging.** Your ship moves off the right edge of the screen. Which method contains the bug? Which line? What would the fix look like?</span>
+
+<span class="s0">### </span><span class="s1">AP-style free response practice</span>
+
+<span class="s3">&gt; </span><span class="s1">Write a class `GoldStar` that extends `FallingObject`. A `GoldStar` is size 24, worth bonus points, and is drawn as a gold-colored circle. Write the complete class, including the constructor and any methods you override.</span>
+<span class="s3">&gt;</span>
+<span class="s3">&gt; </span><span class="s1">Then write a method `countHazards()` for `GamePanel` that returns the number of hazards in `objects`.</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Troubleshooting</span>
+
+<span class="s0">| </span><span class="s1">Symptom </span><span class="s0">| </span><span class="s1">Likely cause </span><span class="s0">|</span>
+<span class="s0">|---|---|</span>
+<span class="s0">| </span><span class="s1">`cannot find symbol` </span><span class="s0">| </span><span class="s1">Typo, missing `import`, or a variable used outside the method where it was declared </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">`incompatible types: possible lossy conversion from double to int` </span><span class="s0">| </span><span class="s1">`Math.random()` returns a `double` — cast with `(int)` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">`constructor FallingObject cannot be applied` </span><span class="s0">| </span><span class="s1">Your subclass constructor is missing `super(...)` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">Ship doesn't move </span><span class="s0">| </span><span class="s1">Click the window once to give it focus; check TODO 3.4–3.6 </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">Ship disappears </span><span class="s0">| </span><span class="s1">Check `getBounds`/`draw` use the **instance variables**, not `0` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">Nothing falls </span><span class="s0">| </span><span class="s1">Did you write TODO 4.1 (`update`) and TODO 5.3 (`spawnObject`)? </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">`IndexOutOfBoundsException` </span><span class="s0">| </span><span class="s1">Your loop starts at `objects.size()` instead of `objects.size() - 1` </span><span class="s0">|</span>
+<span class="s0">| </span><span class="s1">Objects freeze or skip </span><span class="s0">| </span><span class="s1">You're removing inside a forward loop </span><span class="s0">|</span>
+
+<span class="s1">**Debugging habit:** when something is wrong, add `System.out.println(...)` to print the variable you suspect, run, and *look at the numbers* before changing any code.</span>
+
+<span class="s0">---</span>
+
+<span class="s0">## </span><span class="s1">Submission checklist</span>
+
+<span class="s0">- </span><span class="s1">[ ] Game runs with no errors from start to GAME OVER and restart</span>
+<span class="s0">- </span><span class="s1">[ ] All TODOs completed (search for `TODO` — none left, except any you chose to skip in Step 8)</span>
+<span class="s0">- </span><span class="s1">[ ] At least **two** Step 8 challenges completed</span>
+<span class="s0">- </span><span class="s1">[ ] Your own comments explain each method you wrote</span>
+<span class="s0">- </span><span class="s1">[ ] &quot;Check Your Understanding&quot; answers completed</span>
+</pre>
+</body>
+</html>

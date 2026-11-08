@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Star.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #2aacb8;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Star.java</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Color</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Graphics</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* Star.java  (WORKED EXAMPLE)</span>
+ <span class="s3">* A Star is a kind of FallingObject. Catch it to score points!</span>
+ <span class="s3">* Study this class closely - you will write Asteroid.java the same way.</span>
+ <span class="s3">*/</span>
+<span class="s0">public class </span><span class="s1">Star </span><span class="s0">extends </span><span class="s1">FallingObject</span>
+<span class="s2">{</span>
+    <span class="s3">/** Constructor: calls the superclass constructor with a size of 30. */</span>
+    <span class="s0">public </span><span class="s1">Star</span><span class="s2">(</span><span class="s0">int </span><span class="s1">x</span><span class="s2">, </span><span class="s0">int </span><span class="s1">speed</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s0">super</span><span class="s2">(</span><span class="s1">x</span><span class="s2">, </span><span class="s4">30</span><span class="s2">, </span><span class="s1">speed</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** OVERRIDES draw() from FallingObject to draw a 5-point yellow star. */</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">draw</span><span class="s2">(</span><span class="s1">Graphics g</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s0">int </span><span class="s1">centerX </span><span class="s2">= </span><span class="s1">getX</span><span class="s2">() + </span><span class="s1">getSize</span><span class="s2">() / </span><span class="s4">2</span><span class="s2">;</span>
+        <span class="s0">int </span><span class="s1">centerY </span><span class="s2">= </span><span class="s1">getY</span><span class="s2">() + </span><span class="s1">getSize</span><span class="s2">() / </span><span class="s4">2</span><span class="s2">;</span>
+        <span class="s0">int </span><span class="s1">outerRadius </span><span class="s2">= </span><span class="s1">getSize</span><span class="s2">() / </span><span class="s4">2</span><span class="s2">;</span>
+        <span class="s0">int </span><span class="s1">innerRadius </span><span class="s2">= </span><span class="s1">getSize</span><span class="s2">() / </span><span class="s4">4</span><span class="s2">;</span>
+
+        <span class="s5">// A star has 10 points: 5 outer tips alternating with 5 inner corners.</span>
+        <span class="s0">int</span><span class="s2">[] </span><span class="s1">px </span><span class="s2">= </span><span class="s0">new int</span><span class="s2">[</span><span class="s4">10</span><span class="s2">];</span>
+        <span class="s0">int</span><span class="s2">[] </span><span class="s1">py </span><span class="s2">= </span><span class="s0">new int</span><span class="s2">[</span><span class="s4">10</span><span class="s2">];</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s4">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s4">10</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++)</span>
+        <span class="s2">{</span>
+            <span class="s0">double </span><span class="s1">angle </span><span class="s2">= </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">PI </span><span class="s2">/ </span><span class="s4">5 </span><span class="s2">* </span><span class="s1">i </span><span class="s2">- </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">PI </span><span class="s2">/ </span><span class="s4">2</span><span class="s2">;</span>
+            <span class="s0">int </span><span class="s1">radius</span><span class="s2">;</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">i </span><span class="s2">% </span><span class="s4">2 </span><span class="s2">== </span><span class="s4">0</span><span class="s2">)</span>
+            <span class="s2">{</span>
+                <span class="s1">radius </span><span class="s2">= </span><span class="s1">outerRadius</span><span class="s2">;</span>
+            <span class="s2">}</span>
+            <span class="s0">else</span>
+            <span class="s2">{</span>
+                <span class="s1">radius </span><span class="s2">= </span><span class="s1">innerRadius</span><span class="s2">;</span>
+            <span class="s2">}</span>
+            <span class="s1">px</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = </span><span class="s1">centerX </span><span class="s2">+ (</span><span class="s0">int</span><span class="s2">) (</span><span class="s1">radius </span><span class="s2">* </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">cos</span><span class="s2">(</span><span class="s1">angle</span><span class="s2">));</span>
+            <span class="s1">py</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = </span><span class="s1">centerY </span><span class="s2">+ (</span><span class="s0">int</span><span class="s2">) (</span><span class="s1">radius </span><span class="s2">* </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">sin</span><span class="s2">(</span><span class="s1">angle</span><span class="s2">));</span>
+        <span class="s2">}</span>
+
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">setColor</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">YELLOW</span><span class="s2">);</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">fillPolygon</span><span class="s2">(</span><span class="s1">px</span><span class="s2">, </span><span class="s1">py</span><span class="s2">, </span><span class="s4">10</span><span class="s2">);</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

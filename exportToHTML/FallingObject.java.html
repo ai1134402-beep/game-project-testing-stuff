@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>FallingObject.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+FallingObject.java</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Color</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Graphics</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Rectangle</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* FallingObject.java</span>
+ <span class="s3">* SUPERCLASS for everything that falls from the sky.</span>
+ <span class="s3">* Star and Asteroid both &quot;extend&quot; this class, so they inherit</span>
+ <span class="s3">* all of this code without rewriting it.</span>
+ <span class="s3">*</span>
+ <span class="s3">* YOU WILL COMPLETE THIS CLASS IN STEP 4 of the tutorial.</span>
+ <span class="s3">*/</span>
+<span class="s0">public class </span><span class="s1">FallingObject</span>
+<span class="s2">{</span>
+    <span class="s0">private int </span><span class="s1">x</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">y</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">size</span><span class="s2">;    </span><span class="s4">// width AND height (objects are squares/circles)</span>
+    <span class="s0">private int </span><span class="s1">speed</span><span class="s2">;   </span><span class="s4">// pixels moved down per frame</span>
+
+    <span class="s3">/** Constructor (PROVIDED): object starts just above the top of the screen. */</span>
+    <span class="s0">public </span><span class="s1">FallingObject</span><span class="s2">(</span><span class="s0">int </span><span class="s1">x</span><span class="s2">, </span><span class="s0">int </span><span class="s1">size</span><span class="s2">, </span><span class="s0">int </span><span class="s1">speed</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">x </span><span class="s2">= </span><span class="s1">x</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">y </span><span class="s2">= -</span><span class="s1">size</span><span class="s2">;      </span><span class="s4">// negative y = above the visible window</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">size </span><span class="s2">= </span><span class="s1">size</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">speed </span><span class="s2">= </span><span class="s1">speed</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Moves the object down by its speed. */</span>
+    <span class="s0">public void </span><span class="s1">update</span><span class="s2">()</span>
+    <span class="s2">{</span>
+        <span class="s4">//  4.1: Add speed to y.</span>
+        <span class="s1">y </span><span class="s2">+= </span><span class="s1">speed</span><span class="s2">;</span>
+
+    <span class="s2">}</span>
+
+    <span class="s3">/** True once the object has fallen past the bottom of the window. */</span>
+    <span class="s0">public boolean </span><span class="s1">isOffScreen</span><span class="s2">(</span><span class="s0">int </span><span class="s1">panelHeight</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s4">//  4.2: Return true if y is greater than panelHeight,</span>
+        <span class="s4">//           otherwise return false.</span>
+        <span class="s4">//           (Hint: a comparison already gives you a boolean!)</span>
+        <span class="s0">return </span><span class="s1">y </span><span class="s2">&gt; </span><span class="s1">panelHeight</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** The rectangle that surrounds this object (used for collisions). */</span>
+    <span class="s0">public </span><span class="s1">Rectangle getBounds</span><span class="s2">()</span>
+    <span class="s2">{</span>
+        <span class="s4">//  4.3: Return a new Rectangle using x, y, size (width), size (height).</span>
+        <span class="s0">return new </span><span class="s1">Rectangle</span><span class="s2">(</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">size</span><span class="s2">, </span><span class="s1">size</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Default look (PROVIDED): a white square. Subclasses OVERRIDE this. */</span>
+    <span class="s0">public void </span><span class="s1">draw</span><span class="s2">(</span><span class="s1">Graphics g</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">setColor</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">WHITE</span><span class="s2">);</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">fillRect</span><span class="s2">(</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">, </span><span class="s1">size</span><span class="s2">, </span><span class="s1">size</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Default behavior (PROVIDED): objects are harmless. Subclasses may OVERRIDE this. */</span>
+    <span class="s0">public boolean </span><span class="s1">isHazard</span><span class="s2">()</span>
+    <span class="s2">{</span>
+        <span class="s0">return false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s4">// ----- accessor methods (PROVIDED) -----</span>
+    <span class="s4">// Subclasses can't touch private variables directly, so they call these.</span>
+    <span class="s0">public int </span><span class="s1">getX</span><span class="s2">()    { </span><span class="s0">return </span><span class="s1">x</span><span class="s2">; }</span>
+    <span class="s0">public int </span><span class="s1">getY</span><span class="s2">()    { </span><span class="s0">return </span><span class="s1">y</span><span class="s2">; }</span>
+    <span class="s0">public int </span><span class="s1">getSize</span><span class="s2">() { </span><span class="s0">return </span><span class="s1">size</span><span class="s2">; }</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

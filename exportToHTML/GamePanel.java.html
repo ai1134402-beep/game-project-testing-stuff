@@ -1,0 +1,341 @@
+<html>
+<head>
+<title>GamePanel.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #7a7e85;}
+.s5 { color: #2aacb8;}
+.s6 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+GamePanel.java</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span class="s2">.</span><span class="s1">JPanel</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span class="s2">.</span><span class="s1">Timer</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Color</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Dimension</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Font</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">FontMetrics</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">Graphics</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">ActionEvent</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">ActionListener</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">KeyEvent</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">KeyListener</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">ArrayList</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* GamePanel.java</span>
+ <span class="s3">* The &quot;brain&quot; of the game. It runs the game loop, handles the keyboard,</span>
+ <span class="s3">* keeps track of every object, and draws everything on the screen.</span>
+ <span class="s3">* GAME LOOP (runs about 60 times per second):</span>
+ <span class="s3">*      1. actionPerformed() is called by the Timer</span>
+ <span class="s3">*      2. update()  -&gt; change the game's data (move things, check collisions)</span>
+ <span class="s3">*      3. repaint() -&gt; Java calls paintComponent() to redraw the screen</span>
+ <span class="s3">* Search for &quot;&quot; to find every place you need to write code.</span>
+ <span class="s3">*/</span>
+<span class="s0">public class </span><span class="s1">GamePanel </span><span class="s0">extends </span><span class="s1">JPanel </span><span class="s0">implements </span><span class="s1">ActionListener</span><span class="s2">, </span><span class="s1">KeyListener</span>
+<span class="s2">{</span>
+    <span class="s4">// ----- constants -----</span>
+    <span class="s0">public static final int </span><span class="s1">WIDTH </span><span class="s2">= </span><span class="s5">600</span><span class="s2">;</span>
+    <span class="s0">public static final int </span><span class="s1">HEIGHT </span><span class="s2">= </span><span class="s5">700</span><span class="s2">;</span>
+    <span class="s0">private static final int </span><span class="s1">DELAY </span><span class="s2">= </span><span class="s5">16</span><span class="s2">;              </span><span class="s4">// milliseconds between frames (~60 fps)</span>
+    <span class="s0">private static final int </span><span class="s1">STARTING_LIVES </span><span class="s2">= </span><span class="s5">3</span><span class="s2">;</span>
+    <span class="s0">private static final int </span><span class="s1">NUM_BG_STARS </span><span class="s2">= </span><span class="s5">60</span><span class="s2">;</span>
+
+    <span class="s4">//  1.1: Change this color to your own design. new Color(red, green, blue)</span>
+    <span class="s4">//           where each value is 0-255.</span>
+    <span class="s0">private static final </span><span class="s1">Color BACKGROUND_COLOR </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">10</span><span class="s2">, </span><span class="s5">10</span><span class="s2">, </span><span class="s5">40</span><span class="s2">); </span><span class="s4">// I like this color for space</span>
+
+    <span class="s4">// ----- game data -----</span>
+    <span class="s0">private </span><span class="s1">Timer timer</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">Player player</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">FallingObject</span><span class="s2">&gt; </span><span class="s1">objects</span><span class="s2">;         </span><span class="s4">// every Star and Asteroid on screen</span>
+    <span class="s0">private int</span><span class="s2">[] </span><span class="s1">bgX</span><span class="s2">;                                </span><span class="s4">// background star positions</span>
+    <span class="s0">private int</span><span class="s2">[] </span><span class="s1">bgY</span><span class="s2">;                                </span><span class="s4">//   (parallel arrays)</span>
+    <span class="s0">private int </span><span class="s1">score</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">lives</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">level</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">frameCount</span><span class="s2">;</span>
+    <span class="s0">private boolean </span><span class="s1">leftPressed</span><span class="s2">;</span>
+    <span class="s0">private boolean </span><span class="s1">rightPressed</span><span class="s2">;</span>
+    <span class="s0">private boolean </span><span class="s1">gameOver</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">direction</span><span class="s2">;</span>
+
+    <span class="s4">// =====================================================================</span>
+    <span class="s4">//  SET UP</span>
+    <span class="s4">// =====================================================================</span>
+
+    <span class="s0">public </span><span class="s1">GamePanel</span><span class="s2">()</span>
+    <span class="s2">{</span>
+        <span class="s1">setPreferredSize</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Dimension</span><span class="s2">(</span><span class="s1">WIDTH</span><span class="s2">, </span><span class="s1">HEIGHT</span><span class="s2">));</span>
+        <span class="s1">setBackground</span><span class="s2">(</span><span class="s1">BACKGROUND_COLOR</span><span class="s2">);</span>
+        <span class="s1">setFocusable</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s1">addKeyListener</span><span class="s2">(</span><span class="s0">this</span><span class="s2">);</span>
+
+        <span class="s1">startNewGame</span><span class="s2">();</span>
+
+        <span class="s4">//  4.4 (TEMPORARY TEST): Uncomment the next line to test your</span>
+        <span class="s4">//          FallingObject code. You should see one star fall down.</span>
+        <span class="s4">//          Delete or comment it out again when you finish Step 5.</span>
+        <span class="s1">objects</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Star</span><span class="s2">(</span><span class="s5">280</span><span class="s2">, </span><span class="s5">2</span><span class="s2">));</span>
+
+        <span class="s1">timer </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Timer</span><span class="s2">(</span><span class="s1">DELAY</span><span class="s2">, </span><span class="s0">this</span><span class="s2">);</span>
+        <span class="s1">timer</span><span class="s2">.</span><span class="s1">start</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Resets every piece of game data. Used at the start AND when restarting. */</span>
+    <span class="s0">private void </span><span class="s1">startNewGame</span><span class="s2">()</span>
+    <span class="s2">{</span>
+        <span class="s1">player </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Player</span><span class="s2">(</span><span class="s1">WIDTH </span><span class="s2">/ </span><span class="s5">2 </span><span class="s2">- </span><span class="s5">40</span><span class="s2">, </span><span class="s1">HEIGHT </span><span class="s2">- </span><span class="s5">60</span><span class="s2">);</span>
+        <span class="s1">objects </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">FallingObject</span><span class="s2">&gt;();</span>
+
+        <span class="s1">bgX </span><span class="s2">= </span><span class="s0">new int</span><span class="s2">[</span><span class="s1">NUM_BG_STARS</span><span class="s2">];</span>
+        <span class="s1">bgY </span><span class="s2">= </span><span class="s0">new int</span><span class="s2">[</span><span class="s1">NUM_BG_STARS</span><span class="s2">];</span>
+        <span class="s4">//  5.1: Use a for loop to give every background star a random</span>
+        <span class="s4">//           position:   bgX[i] = (int) (Math.random() * WIDTH);</span>
+        <span class="s4">//                       bgY[i] = (int) (Math.random() * HEIGHT);</span>
+        <span class="s4">//           (Hint: loop i from 0 up to bgX.length.)</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s1">bgX</span><span class="s2">.</span><span class="s1">length</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">bgX</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = (</span><span class="s0">int</span><span class="s2">) (</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">random</span><span class="s2">() * </span><span class="s1">WIDTH</span><span class="s2">);</span>
+            <span class="s1">bgY</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = (</span><span class="s0">int</span><span class="s2">) (</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">random</span><span class="s2">() * </span><span class="s1">HEIGHT</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s1">score </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+        <span class="s1">lives </span><span class="s2">= </span><span class="s1">STARTING_LIVES</span><span class="s2">;</span>
+        <span class="s1">level </span><span class="s2">= </span><span class="s5">1</span><span class="s2">;</span>
+        <span class="s1">frameCount </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+        <span class="s1">leftPressed </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s1">rightPressed </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s1">gameOver </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s4">// =====================================================================</span>
+    <span class="s4">//  GAME LOOP</span>
+    <span class="s4">// =====================================================================</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">actionPerformed</span><span class="s2">(</span><span class="s1">ActionEvent e</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s1">update</span><span class="s2">();</span>
+        <span class="s1">repaint</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Updates ALL game data for one frame. */</span>
+    <span class="s0">private void </span><span class="s1">update</span><span class="s2">()</span>
+    <span class="s2">{</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">gameOver</span><span class="s2">)</span>
+        <span class="s2">{</span>
+            <span class="s0">return</span><span class="s2">;</span>
+        <span class="s2">}</span>
+        <span class="s1">frameCount</span><span class="s2">++;</span>
+
+        <span class="s4">// --- player movement ---</span>
+        <span class="s4">//  3.4: Figure out which way the player should move:</span>
+        <span class="s4">//           - start a local int named direction at 0</span>
+        <span class="s4">//           - if leftPressed is true, subtract 1 from direction</span>
+        <span class="s4">//           - if rightPressed is true, add 1 to direction</span>
+        <span class="s4">//           Then call:  player.setDirection(direction);</span>
+        <span class="s4">//           and:        player.update(WIDTH);</span>
+        <span class="s4">//           (Why use TWO separate ifs instead of if / else if?</span>
+        <span class="s4">//            Answer in your notebook after you test it.)</span>
+
+        
+        <span class="s1">direction </span><span class="s2">= </span><span class="s5">0</span><span class="s2">;</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">leftPressed</span><span class="s2">) </span><span class="s1">direction</span><span class="s2">--;</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">rightPressed</span><span class="s2">) </span><span class="s1">direction</span><span class="s2">++;</span>
+
+        <span class="s1">player</span><span class="s2">.</span><span class="s1">setDirection</span><span class="s2">(</span><span class="s1">direction</span><span class="s2">);</span>
+        <span class="s1">player</span><span class="s2">.</span><span class="s1">update</span><span class="s2">(</span><span class="s1">WIDTH</span><span class="s2">);</span>
+
+        <span class="s4">// --- background stars drift downward ---</span>
+        <span class="s4">//  5.2: Write a for loop over the bgY array. For each star:</span>
+        <span class="s4">//           - add 1 + i % 3 to bgY[i]  (so stars drift at different speeds)</span>
+        <span class="s4">//           - if bgY[i] is greater than HEIGHT, wrap it back to the top:</span>
+        <span class="s4">//                 bgY[i] = 0;</span>
+        <span class="s4">//                 bgX[i] = (int) (Math.random() * WIDTH);</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s1">bgY</span><span class="s2">.</span><span class="s1">length</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">bgY</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] += </span><span class="s5">1 </span><span class="s2">+ </span><span class="s1">i </span><span class="s2">% </span><span class="s5">3</span><span class="s2">;</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">bgY</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] &gt; </span><span class="s1">HEIGHT</span><span class="s2">) {</span>
+                <span class="s1">bgY</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = </span><span class="s5">0</span><span class="s2">;</span>
+                <span class="s1">bgX</span><span class="s2">[</span><span class="s1">i</span><span class="s2">] = (</span><span class="s0">int</span><span class="s2">) (</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">random</span><span class="s2">() * </span><span class="s1">WIDTH</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+
+        <span class="s4">// --- difficulty ---</span>
+        <span class="s4">//  7.2: Calculate the level from the score:  level = score / 100 + 1;</span>
+        <span class="s4">//           (Integer division! What level are you on at score 99? 100?)</span>
+        <span class="s1">level </span><span class="s2">= </span><span class="s1">score </span><span class="s2">/ </span><span class="s5">100 </span><span class="s2">+ </span><span class="s5">1</span><span class="s2">;</span>
+        <span class="s0">int </span><span class="s1">spawnRate </span><span class="s2">= </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">max</span><span class="s2">(</span><span class="s5">15</span><span class="s2">, </span><span class="s5">60 </span><span class="s2">- </span><span class="s5">5 </span><span class="s2">* </span><span class="s1">level</span><span class="s2">); </span><span class="s4">// frames between new objects</span>
+
+        <span class="s4">// --- spawning ---</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">frameCount </span><span class="s2">% </span><span class="s1">spawnRate </span><span class="s2">== </span><span class="s5">0</span><span class="s2">)</span>
+        <span class="s2">{</span>
+            <span class="s1">spawnObject</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s4">// --- falling objects: move, collide, remove ---</span>
+        <span class="s4">//  4.5: Write an enhanced for loop that goes through objects and</span>
+        <span class="s4">//           calls update() on each one:</span>
+        <span class="s4">//               for (FallingObject obj : objects) { ... }</span>
+        <span class="s4">//           (This is enough to test Step 4. You will REPLACE it in Step 5.)</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s1">objects</span><span class="s2">.</span><span class="s1">size</span><span class="s2">() - </span><span class="s5">1</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&gt;= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i</span><span class="s2">--) {</span>
+            <span class="s1">FallingObject obj </span><span class="s2">= </span><span class="s1">objects</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">i</span><span class="s2">);</span>
+            <span class="s1">obj</span><span class="s2">.</span><span class="s1">update</span><span class="s2">();</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">obj</span><span class="s2">.</span><span class="s1">getBounds</span><span class="s2">().</span><span class="s1">intersects</span><span class="s2">(</span><span class="s1">player</span><span class="s2">.</span><span class="s1">getBounds</span><span class="s2">())) {</span>
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">obj</span><span class="s2">.</span><span class="s1">isHazard</span><span class="s2">()) </span><span class="s1">lives</span><span class="s2">--;</span>
+                <span class="s0">else </span><span class="s1">score </span><span class="s2">+= </span><span class="s5">10</span><span class="s2">;</span>
+                <span class="s1">objects</span><span class="s2">.</span><span class="s1">remove</span><span class="s2">(</span><span class="s1">i</span><span class="s2">);</span>
+            <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">obj</span><span class="s2">.</span><span class="s1">isOffScreen</span><span class="s2">(</span><span class="s1">HEIGHT</span><span class="s2">)) </span><span class="s1">objects</span><span class="s2">.</span><span class="s1">remove</span><span class="s2">(</span><span class="s1">i</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s4">//  5.4: REPLACE your enhanced for loop above with a for loop that</span>
+        <span class="s4">//           counts BACKWARDS through the list:</span>
+        <span class="s4">//               for (int i = objects.size() - 1; i &gt;= 0; i--)</span>
+        <span class="s4">//           Inside the loop:</span>
+        <span class="s4">//             a) FallingObject obj = objects.get(i);</span>
+        <span class="s4">//             b) obj.update();</span>
+        <span class="s4">//             c) if obj.isOffScreen(HEIGHT) then objects.remove(i);</span>
+        <span class="s4">//           WHY backwards? Because removing an item shifts everything</span>
+        <span class="s4">//           after it. Going backwards means no item gets skipped.</span>
+        <span class="s4">//           (Try going forwards and watch what happens!)</span>
+        <span class="s4">//</span>
+        <span class="s4">//  6.2: Collisions. Inside your loop, BEFORE the off-screen check:</span>
+        <span class="s4">//             if (obj.getBounds().intersects(player.getBounds()))</span>
+        <span class="s4">//           then:</span>
+        <span class="s4">//             - if obj.isHazard() is true, subtract 1 from lives</span>
+        <span class="s4">//             - otherwise add 10 to score</span>
+        <span class="s4">//             - remove the object from the list</span>
+        <span class="s4">//           and make the off-screen check an &quot;else if&quot; after it.</span>
+
+
+        <span class="s4">// --- game over? ---</span>
+        <span class="s4">//  7.1: If lives is 0 or less, set gameOver to true.</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">lives </span><span class="s2">&lt;= </span><span class="s5">0</span><span class="s2">) </span><span class="s1">gameOver </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+
+    <span class="s2">}</span>
+
+    <span class="s3">/** Creates one new Star (70% of the time) or Asteroid (30%) at a random x. */</span>
+    <span class="s0">private void </span><span class="s1">spawnObject</span><span class="s2">()</span>
+    <span class="s2">{</span>
+        <span class="s4">//  5.3: Create a Star and add it to the objects list.</span>
+        <span class="s4">//           - pick a random x:     int x = (int) (Math.random() * (WIDTH - 40));</span>
+        <span class="s4">//           - pick a random speed: int speed = 2 + (int) (Math.random() * 3);</span>
+        <span class="s4">//           - objects.add(new Star(x, speed));</span>
+        <span class="s4">//</span>
+        <span class="s4">//  6.1: AFTER you write Asteroid.java, change this method so it</span>
+        <span class="s4">//           makes an Asteroid 30% of the time:</span>
+        <span class="s4">//               if (Math.random() &lt; 0.3) { objects.add(new Asteroid(x, speed)); }</span>
+        <span class="s4">//               else                     { objects.add(new Star(x, speed));     }</span>
+        <span class="s4">//           Then make the objects faster as the level goes up:</span>
+        <span class="s4">//               int speed = 2 + (int) (Math.random() * 3) + level / 2;</span>
+        <span class="s0">int </span><span class="s1">x </span><span class="s2">= (</span><span class="s0">int</span><span class="s2">) (</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">random</span><span class="s2">() * (</span><span class="s1">WIDTH </span><span class="s2">- </span><span class="s5">40</span><span class="s2">));</span>
+        <span class="s0">int </span><span class="s1">speed </span><span class="s2">= </span><span class="s5">2 </span><span class="s2">+ (</span><span class="s0">int</span><span class="s2">) (</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">random</span><span class="s2">() * </span><span class="s5">3</span><span class="s2">);</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">random</span><span class="s2">() &lt;= </span><span class="s5">.5</span><span class="s2">) </span><span class="s1">objects</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Asteroid</span><span class="s2">(</span><span class="s1">x</span><span class="s2">,</span><span class="s1">speed</span><span class="s2">));</span>
+        <span class="s0">else </span><span class="s1">objects</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Star</span><span class="s2">(</span><span class="s1">x</span><span class="s2">,</span><span class="s1">speed</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+    <span class="s4">// =====================================================================</span>
+    <span class="s4">//  DRAWING   (PROVIDED - you do not need to change this section)</span>
+    <span class="s4">// =====================================================================</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">paintComponent</span><span class="s2">(</span><span class="s1">Graphics g</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s0">super</span><span class="s2">.</span><span class="s1">paintComponent</span><span class="s2">(</span><span class="s1">g</span><span class="s2">);   </span><span class="s4">// clears the screen with the background color</span>
+
+        <span class="s4">// background stars</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">setColor</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">190</span><span class="s2">,</span><span class="s5">190</span><span class="s2">,</span><span class="s5">190</span><span class="s2">));</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s1">bgX</span><span class="s2">.</span><span class="s1">length</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++)</span>
+        <span class="s2">{</span>
+            <span class="s1">g</span><span class="s2">.</span><span class="s1">fillRect</span><span class="s2">(</span><span class="s1">bgX</span><span class="s2">[</span><span class="s1">i</span><span class="s2">], </span><span class="s1">bgY</span><span class="s2">[</span><span class="s1">i</span><span class="s2">], </span><span class="s5">2</span><span class="s2">, </span><span class="s5">2</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s4">// falling objects (each one draws itself - polymorphism!)</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">FallingObject obj </span><span class="s2">: </span><span class="s1">objects</span><span class="s2">)</span>
+        <span class="s2">{</span>
+            <span class="s1">obj</span><span class="s2">.</span><span class="s1">draw</span><span class="s2">(</span><span class="s1">g</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">player</span><span class="s2">.</span><span class="s1">draw</span><span class="s2">(</span><span class="s1">g</span><span class="s2">);</span>
+
+        <span class="s4">// heads-up display</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">setColor</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">WHITE</span><span class="s2">);</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s6">&quot;Arial&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">BOLD</span><span class="s2">, </span><span class="s5">20</span><span class="s2">));</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">drawString</span><span class="s2">(</span><span class="s6">&quot;Score: &quot; </span><span class="s2">+ </span><span class="s1">score</span><span class="s2">, </span><span class="s5">15</span><span class="s2">, </span><span class="s5">30</span><span class="s2">);</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">drawString</span><span class="s2">(</span><span class="s6">&quot;Level: &quot; </span><span class="s2">+ </span><span class="s1">level</span><span class="s2">, </span><span class="s5">15</span><span class="s2">, </span><span class="s5">55</span><span class="s2">);</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">drawString</span><span class="s2">(</span><span class="s6">&quot;Lives: &quot; </span><span class="s2">+ </span><span class="s1">lives</span><span class="s2">, </span><span class="s1">WIDTH </span><span class="s2">- </span><span class="s5">110</span><span class="s2">, </span><span class="s5">30</span><span class="s2">);</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">gameOver</span><span class="s2">)</span>
+        <span class="s2">{</span>
+            <span class="s1">g</span><span class="s2">.</span><span class="s1">setColor</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Color</span><span class="s2">(</span><span class="s5">0</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s5">170</span><span class="s2">));</span>
+            <span class="s1">g</span><span class="s2">.</span><span class="s1">fillRect</span><span class="s2">(</span><span class="s5">0</span><span class="s2">, </span><span class="s5">0</span><span class="s2">, </span><span class="s1">WIDTH</span><span class="s2">, </span><span class="s1">HEIGHT</span><span class="s2">);</span>
+            <span class="s1">g</span><span class="s2">.</span><span class="s1">setColor</span><span class="s2">(</span><span class="s1">Color</span><span class="s2">.</span><span class="s1">WHITE</span><span class="s2">);</span>
+            <span class="s1">g</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s6">&quot;Arial&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">BOLD</span><span class="s2">, </span><span class="s5">48</span><span class="s2">));</span>
+            <span class="s1">drawCentered</span><span class="s2">(</span><span class="s1">g</span><span class="s2">, </span><span class="s6">&quot;GAME OVER&quot;</span><span class="s2">, </span><span class="s1">HEIGHT </span><span class="s2">/ </span><span class="s5">2 </span><span class="s2">- </span><span class="s5">20</span><span class="s2">);</span>
+            <span class="s1">g</span><span class="s2">.</span><span class="s1">setFont</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Font</span><span class="s2">(</span><span class="s6">&quot;Arial&quot;</span><span class="s2">, </span><span class="s1">Font</span><span class="s2">.</span><span class="s1">PLAIN</span><span class="s2">, </span><span class="s5">24</span><span class="s2">));</span>
+            <span class="s1">drawCentered</span><span class="s2">(</span><span class="s1">g</span><span class="s2">, </span><span class="s6">&quot;Final score: &quot; </span><span class="s2">+ </span><span class="s1">score</span><span class="s2">, </span><span class="s1">HEIGHT </span><span class="s2">/ </span><span class="s5">2 </span><span class="s2">+ </span><span class="s5">25</span><span class="s2">);</span>
+            <span class="s1">drawCentered</span><span class="s2">(</span><span class="s1">g</span><span class="s2">, </span><span class="s6">&quot;Press R to play again&quot;</span><span class="s2">, </span><span class="s1">HEIGHT </span><span class="s2">/ </span><span class="s5">2 </span><span class="s2">+ </span><span class="s5">65</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/** Helper (PROVIDED): draws text centered horizontally. */</span>
+    <span class="s0">private void </span><span class="s1">drawCentered</span><span class="s2">(</span><span class="s1">Graphics g</span><span class="s2">, </span><span class="s1">String text</span><span class="s2">, </span><span class="s0">int </span><span class="s1">y</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s1">FontMetrics fm </span><span class="s2">= </span><span class="s1">g</span><span class="s2">.</span><span class="s1">getFontMetrics</span><span class="s2">();</span>
+        <span class="s0">int </span><span class="s1">x </span><span class="s2">= (</span><span class="s1">WIDTH </span><span class="s2">- </span><span class="s1">fm</span><span class="s2">.</span><span class="s1">stringWidth</span><span class="s2">(</span><span class="s1">text</span><span class="s2">)) / </span><span class="s5">2</span><span class="s2">;</span>
+        <span class="s1">g</span><span class="s2">.</span><span class="s1">drawString</span><span class="s2">(</span><span class="s1">text</span><span class="s2">, </span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s4">// =====================================================================</span>
+    <span class="s4">//  KEYBOARD</span>
+    <span class="s4">// =====================================================================</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">keyPressed</span><span class="s2">(</span><span class="s1">KeyEvent e</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s0">int </span><span class="s1">code </span><span class="s2">= </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getKeyCode</span><span class="s2">();</span>
+
+        <span class="s4">//  3.5: If code equals KeyEvent.VK_LEFT or KeyEvent.VK_A,</span>
+        <span class="s4">//           set leftPressed to true.</span>
+        <span class="s4">//           If code equals KeyEvent.VK_RIGHT or KeyEvent.VK_D,</span>
+        <span class="s4">//           set rightPressed to true.</span>
+        <span class="s4">//           (Use the OR operator ||  to accept either key.)</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_LEFT </span><span class="s2">|| </span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_A</span><span class="s2">) </span><span class="s1">leftPressed </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_RIGHT </span><span class="s2">|| </span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_D</span><span class="s2">) </span><span class="s1">rightPressed </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+
+        <span class="s4">//  7.3: If the game is over AND the player pressed KeyEvent.VK_R,</span>
+        <span class="s4">//           call startNewGame().  (Use the AND operator &amp;&amp;.)</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">gameOver </span><span class="s2">&amp;&amp; </span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_R</span><span class="s2">) </span><span class="s1">startNewGame</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">keyReleased</span><span class="s2">(</span><span class="s1">KeyEvent e</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s0">int </span><span class="s1">code </span><span class="s2">= </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getKeyCode</span><span class="s2">();</span>
+
+        <span class="s4">//  3.6: Do the opposite of keyPressed: when a key is RELEASED,</span>
+        <span class="s4">//           set leftPressed / rightPressed back to false.</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_LEFT </span><span class="s2">|| </span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_A</span><span class="s2">) </span><span class="s1">leftPressed </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_RIGHT </span><span class="s2">|| </span><span class="s1">code </span><span class="s2">== </span><span class="s1">KeyEvent</span><span class="s2">.</span><span class="s1">VK_D</span><span class="s2">) </span><span class="s1">rightPressed </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">keyTyped</span><span class="s2">(</span><span class="s1">KeyEvent e</span><span class="s2">)</span>
+    <span class="s2">{</span>
+        <span class="s4">// not needed, but required by the KeyListener interface</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
